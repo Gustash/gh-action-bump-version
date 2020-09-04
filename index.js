@@ -35,9 +35,16 @@ Toolkit.run(async tools => {
 
   try {
     const current = pkg.version.toString()
+    let author = {
+      name: process.env.GITHUB_USER || 'Automated Version Bump',
+      email:  process.env.GITHUB_EMAIL || 'gh-action-bump-version@users.noreply.github.com',
+    }
+    if (event.head_commit && event.head_commit.author) {
+      author = event.head_commit.author
+    }
     // set git user
-    await tools.runInWorkspace('git', ['config', 'user.name', `"${process.env.GITHUB_USER || 'Automated Version Bump'}"`])
-    await tools.runInWorkspace('git', ['config', 'user.email', `"${process.env.GITHUB_EMAIL || 'gh-action-bump-version@users.noreply.github.com'}"`])
+    await tools.runInWorkspace('git', ['config', 'user.name', `"${author.name}"`])
+    await tools.runInWorkspace('git', ['config', 'user.email', `"${author.email}"`])
 
     const currentBranch = /refs\/[a-zA-Z]+\/(.*)/.exec(process.env.GITHUB_REF)[1]
     console.log('currentBranch:', currentBranch)
